@@ -8,9 +8,10 @@ using BeerhallEF.Data;
 namespace BeerhallEF.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20160913171016_CreateTableBeer")]
+    partial class CreateTableBeer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
@@ -23,9 +24,6 @@ namespace BeerhallEF.Migrations
 
                     b.Property<double?>("AlcoholByVolume");
 
-                    b.Property<int?>("BrewerId")
-                        .IsRequired();
-
                     b.Property<string>("Description");
 
                     b.Property<string>("Name")
@@ -35,8 +33,6 @@ namespace BeerhallEF.Migrations
                     b.Property<decimal>("Price");
 
                     b.HasKey("BeerId");
-
-                    b.HasIndex("BrewerId");
 
                     b.ToTable("Beers");
                 });
@@ -66,14 +62,6 @@ namespace BeerhallEF.Migrations
                     b.HasKey("BrewerId");
 
                     b.ToTable("Brewers");
-                });
-
-            modelBuilder.Entity("BeerhallEF.Models.Beer", b =>
-                {
-                    b.HasOne("BeerhallEF.Models.Brewer")
-                        .WithMany("Beers")
-                        .HasForeignKey("BrewerId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
         }
     }

@@ -1,5 +1,6 @@
 ﻿using BeerhallEF.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BeerhallEF.Data
@@ -7,6 +8,7 @@ namespace BeerhallEF.Data
     public class ApplicationDbContext : DbContext
     {
         public DbSet<Brewer> Brewers { get; set; }
+        public DbSet<Beer> Beers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -17,7 +19,14 @@ namespace BeerhallEF.Data
         protected override void OnModelCreating(ModelBuilder modelbuilder)
         {
             modelbuilder.Entity<Brewer>(MapBrewer);
+            modelbuilder.Entity<Beer>(MapBeer);
+        }
 
+   
+        private void MapBeer(EntityTypeBuilder<Beer> b)
+        {
+           // Properties
+            b.Property(t => t.Name).IsRequired().HasMaxLength(100);
         }
 
         private static void MapBrewer(EntityTypeBuilder<Brewer> b)
@@ -43,6 +52,13 @@ namespace BeerhallEF.Data
             b.Property(t => t.BrewerId)
                 .ValueGeneratedOnAdd();
 
+            //Associations
+            b.HasMany(t => t.Beers)
+                .WithOne()
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+            
+       
         }
     }
 }
