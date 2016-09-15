@@ -9,6 +9,7 @@ namespace BeerhallEF.Data
     {
         public DbSet<Brewer> Brewers { get; set; }
         public DbSet<Beer> Beers { get; set; }
+        public DbSet<Location> Locations { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -20,12 +21,24 @@ namespace BeerhallEF.Data
         {
             modelbuilder.Entity<Brewer>(MapBrewer);
             modelbuilder.Entity<Beer>(MapBeer);
+            modelbuilder.Entity<Location>(MapLocation);
         }
 
-   
+        private static void MapLocation(EntityTypeBuilder<Location> l)
+        {
+            //Primary Key
+            l.HasKey(t => t.PostalCode);
+
+            //Properties
+            l.Property(t => t.Name)
+                .IsRequired()
+                .HasMaxLength(50);
+        }
+
+
         private void MapBeer(EntityTypeBuilder<Beer> b)
         {
-           // Properties
+            // Properties
             b.Property(t => t.Name).IsRequired().HasMaxLength(100);
         }
 
@@ -57,8 +70,13 @@ namespace BeerhallEF.Data
                 .WithOne()
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
-            
-       
+
+            b.HasOne(t => t.Location)
+               .WithMany()
+               .IsRequired(false)
+               .OnDelete(DeleteBehavior.Restrict);
+
+
         }
     }
 }
