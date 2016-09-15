@@ -28,7 +28,7 @@ namespace BeerhallEF.Models
 
         public Location Location { get; set; }
 
-
+        public ICollection<Course> Courses { get; private set; }
 
         #endregion
 
@@ -36,6 +36,7 @@ namespace BeerhallEF.Models
         protected Brewer()
         {
             Beers = new HashSet<Beer>();
+            Courses = new List<Course>();
         }
         #endregion
 
