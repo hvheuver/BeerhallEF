@@ -21,8 +21,8 @@ namespace BeerhallEF
 
             using (ApplicationDbContext context = new ApplicationDbContext())
             {
-              //  context.Database.EnsureDeleted();
-              //context.Database.EnsureCreated();
+                //context.Database.EnsureDeleted();
+                //context.Database.EnsureCreated();
                 new BeerhallDataInitializer(context).InitializeData();
                 Console.WriteLine("Database geinstantieerd");
 
@@ -73,9 +73,9 @@ namespace BeerhallEF
                 .ToList();
             PrintBrewers();
 
-            //Console.WriteLine("\n---Filtering the brewers: brewers with more than 4 beers, ordered by name---");
+            Console.WriteLine("\n---Filtering the brewers: brewers with more than 4 beers, ordered by name---");
             _brewers = context.Brewers
-               .Where(b => b.Beers.Count() > 4)
+                .Where(b => b.Beers.Count > 4)
                 .OrderBy(b => b.Name);
             PrintBrewers();
 
@@ -102,15 +102,17 @@ namespace BeerhallEF
                 Console.WriteLine(br.Name + " " + br.Beers.Count);
 
             //Better Performance with projections
-            Console.WriteLine("\n---All brewers from Leuven, print the name and the number of beers - Use projections---");
+            Console.WriteLine(
+                "\n---All brewers from Leuven, print the name and the number of beers - Use projections---");
             var brewers2 = context.Brewers
                 .Where(b => b.Location.Name == "Leuven")
-                .Select(b => new { Name = b.Name, NumberOfBeers = b.Beers.Count })
+                .Select(b => new {Name = b.Name, NumberOfBeers = b.Beers.Count})
                 .ToList();
             foreach (var br in brewers2)
                 Console.WriteLine(br.Name + " " + br.NumberOfBeers);
 
-            Console.WriteLine("\n---Loading multiple relationships: all brewers, print name, location and number of beers--");
+            Console.WriteLine(
+                "\n---Loading multiple relationships: all brewers, print name, location and number of beers--");
             _brewers = context.Brewers
                 .Include(b => b.Location)
                 .Include(b => b.Beers)
@@ -134,27 +136,29 @@ namespace BeerhallEF
 
             context.Courses
                 .Where(c => c.Brewer.BrewerId == _brewer.BrewerId)
-               .Load();
+                .Load();
 
             foreach (var c in _brewer.Courses)
             {
                 Console.WriteLine(c.Title);
             }
 
+            Console.WriteLine("\n---Inheritance--");
+            _brewer = context.Brewers
+                .Include(b => b.Courses)
+                .SingleOrDefault(b => b.Name == "Bavik");
+            var courses = _brewer.Courses.OfType<OnlineCourse>().ToList();
+            courses.ForEach(c => Console.WriteLine(c.Title));
+
             /*----------------------Client versus server evaluation------------------------------*/
             Console.WriteLine("\n---All brewers with NrOfBeers > 4--");
-            _brewers = context.Brewers.Include(b=>b.Beers)
+            _brewers = context.Brewers.Include(b => b.Beers)
                 .Where(b => b.NrOfBeers > 4)
                 .OrderBy(b => b.NrOfBeers)
                 .ToList();
             _brewers.ToList().ForEach(b => Console.WriteLine($"{b.Name}: {b.NrOfBeers}"));
 
-            Console.WriteLine("\n---Overerving--");
-            _brewer = context.Brewers.SingleOrDefault(b => b.Name == "Bavik");
-            var courses = _brewer.Courses.OfType<OnlineCourse>().ToList();
-            courses.ForEach(c => Console.WriteLine(c.Title));
         }
-
 
         private static void SavingData(ApplicationDbContext context)
         {
