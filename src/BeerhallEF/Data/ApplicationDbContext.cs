@@ -27,6 +27,8 @@ namespace BeerhallEF.Data
             modelbuilder.Entity<Course>(MapCourse);
             modelbuilder.Entity<Category>(MapCategory);
             modelbuilder.Entity<CategoryBrewer>(MapCategoryBrewer);
+            modelbuilder.Entity<OnlineCourse>(MapOnlineCourse);
+            modelbuilder.Entity<OnsiteCourse>(MapOnsiteCourse);
         }
 
         private static void MapCategory(EntityTypeBuilder<Category> c)
@@ -62,6 +64,24 @@ namespace BeerhallEF.Data
 
             //Properties
             c.Property(t => t.Title).HasMaxLength(100).IsRequired();
+
+            //Inheritance : TPH, and renaming the discriminator
+            c.HasDiscriminator<string>("Type")
+                .HasValue<OnlineCourse>("Online")
+               .HasValue<OnsiteCourse>("Onsite");
+        }
+
+        private void MapOnlineCourse(EntityTypeBuilder<OnlineCourse> c)
+        {
+            //Properties
+            c.Property(t => t.Url).HasMaxLength(100);
+        }
+
+        private void MapOnsiteCourse(EntityTypeBuilder<OnsiteCourse> c)
+        {
+            //Properties
+            c.Property(t => t.StartDate)
+                .HasAnnotation("BackingField", "_startDate");
         }
 
         private static void MapLocation(EntityTypeBuilder<Location> l)
